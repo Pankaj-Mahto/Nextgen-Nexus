@@ -44,7 +44,7 @@ export const applyJob = async (req, res) => {
 
         const resumeUpload = await cloudinary.uploader.upload(resume.path, {
             folder: 'job_portal',
-            resource_type: 'auto',
+            resource_type: 'image',
             public_id: `${Date.now()}-resume`, // Ensure unique public_id
         });
         console.log('Resume upload result:', resumeUpload); // Debug log

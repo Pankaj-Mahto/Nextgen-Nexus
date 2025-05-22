@@ -10,7 +10,7 @@ import axios from 'axios';
 import { Button } from '../ui/button';
 import { setAllApplicants } from '@/redux/applicationSlice';
 
-const shortlistingStatus = ['accepted', 'rejected']; // Matches enum, excludes 'pending' for admin updates
+const shortlistingStatus = ['accepted', 'rejected'];
 
 const ApplicantsTable = ({ jobId }) => {
     const dispatch = useDispatch();
@@ -19,15 +19,20 @@ const ApplicantsTable = ({ jobId }) => {
     useEffect(() => {
         const fetchApplicants = async () => {
             try {
+                console.log('Fetching applicants for jobId:', jobId);
+                if (!jobId) {
+                    throw new Error('Job ID is missing.');
+                }
                 const res = await axios.get(`${APPLICATION_API_END_POINT}/job/${jobId}/applicants`, {
                     withCredentials: true,
                 });
+                console.log('Applicants response:', res.data);
                 if (res.data.success) {
                     dispatch(setAllApplicants(res.data.job.applications || []));
                 }
             } catch (error) {
-                console.log(error);
-                toast.error('Failed to fetch applicants.');
+                console.error('Error fetching applicants:', error);
+                toast.error(error.response?.data?.message || error.message || 'Failed to fetch applicants.');
             }
         };
         if (jobId) fetchApplicants();
@@ -52,6 +57,17 @@ const ApplicantsTable = ({ jobId }) => {
         } catch (error) {
             toast.error(error.response?.data?.message || 'Failed to update status.');
         }
+    };
+
+    const handleResumeClick = (url) => {
+        console.log('Opening resume in new tab:', url);
+        fetch(url, { method: 'HEAD' })
+            .then((response) => {
+                if (!response.ok) {
+                    toast.error('Failed to access resume image.');
+                }
+            })
+            .catch(() => toast.error('Error accessing resume image.'));
     };
 
     return (
@@ -84,6 +100,7 @@ const ApplicantsTable = ({ jobId }) => {
                                             href={item.resume.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            onClick={() => handleResumeClick(item.resume.url)}
                                         >
                                             View Resume
                                         </a>

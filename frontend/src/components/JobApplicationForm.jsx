@@ -60,7 +60,7 @@ const JobApplicationForm = ({ jobId }) => {
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <Label htmlFor="resume">Resume (PDF)</Label>
+                        <Label htmlFor="resume">Resume </Label>
                         <Input
                             id="resume"
                             type="file"
